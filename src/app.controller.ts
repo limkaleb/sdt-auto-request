@@ -14,12 +14,15 @@ import dayjs from 'dayjs';
 import { AppService } from './app.service';
 import { CreateUserDTO } from './dtos/CreateUser.dto';
 import { CronjobsService } from './cronjobs/cronjobs.service';
+import { getDay, getMonth } from './utils/date-utils';
+import { TasksService } from './tasks/tasks.service';
 
-@Controller()
+@Controller('api')
 export class AppController {
   constructor(
     private readonly appService: AppService,
     private readonly cronjobService: CronjobsService,
+    private readonly tasksService: TasksService,
   ) {}
 
   @Post('/user')
@@ -37,12 +40,14 @@ export class AppController {
 
     const month = dayjs(date).get('month');
     const day = dayjs(date).get('date');
-    await this.cronjobService.createCronjob(newUser.id, {
+    const cron = await this.cronjobService.createCronjob(newUser.id, {
       name: `${newUser.firstName}_birthday_message`,
       isEnabled: true,
-      crontab: `0 9 ${day} ${month} *`,
+      // crontab: `0 9 ${getDay(date)} ${getMonth(date)} *`,
+      crontab: `* * * * * *`,
     });
 
+    this.tasksService.addCronjob(cron);
     return newUser;
   }
 
@@ -52,31 +57,32 @@ export class AppController {
     @Body() createUserDto: CreateUserDTO,
   ) {
     const date = new Date(createUserDto.birthDate).toISOString();
-    const user = await this.appService.updateUser(Number(id), {
+    const user = await this.appService.updateUser(id, {
       ...createUserDto,
       birthDate: date,
     });
 
-    const month = dayjs(date).get('month');
-    const day = dayjs(date).get('date');
-    await this.cronjobService.createCronjob(user.id, {
-      name: `${user.firstName}_birthday_message`,
-      isEnabled: true,
-      crontab: `0 9 ${day} ${month} *`,
-    });
+    const cron = await this.cronjobService.updateCronjobsByUserId(
+      user.id,
+      `0 9 ${getDay(date)} ${getMonth(date)} *`,
+    );
 
+    this.tasksService.deleteCron(cron.name);
+    this.tasksService.addCronjob(cron);
     return user;
   }
 
   @Delete('/user/:id')
   async deleteUser(@Param('id', ParseIntPipe) id: number) {
-    await this.appService.deleteUser(Number(id));
+    const cron = await this.cronjobService.getCronjobByUserId(id);
+    this.tasksService.deleteCron(cron.name);
+    await this.appService.deleteUser(id);
     return { status: 'success' };
   }
 
   @Get('/user/:id')
   async getUserById(@Param('id', ParseIntPipe) id: number) {
-    const user = await this.appService.getUserById(Number(id));
+    const user = await this.appService.getUserById(id);
     return user;
   }
 }

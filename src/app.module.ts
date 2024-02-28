@@ -7,6 +7,9 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { BullModule } from '@nestjs/bull';
 import { QueueModule } from './queue/queue.module';
 import { CronjobsModule } from './cronjobs/cronjobs.module';
+import { CronjobsService } from './cronjobs/cronjobs.service';
+import { CronjobsController } from './cronjobs/cronjobs.controller';
+import { TasksService } from './tasks/tasks.service';
 
 @Module({
   imports: [
@@ -23,7 +26,7 @@ import { CronjobsModule } from './cronjobs/cronjobs.module';
     QueueModule,
     CronjobsModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [AppController, CronjobsController],
+  providers: [AppService, CronjobsService, TasksService],
 })
 export class AppModule {}
