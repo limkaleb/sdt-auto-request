@@ -16,10 +16,16 @@
     "test": "dotenv -e .env.test jest"
   },
   "dependencies": {
+    "@nestjs/axios": "^3.0.2",
+    "@nestjs/bull": "^10.1.0",
     "@nestjs/common": "^10.0.0",
     "@nestjs/core": "^10.0.0",
     "@nestjs/platform-express": "^10.0.0",
+    "@nestjs/schedule": "^4.0.1",
     "@prisma/client": "5.10.2",
+    "axios": "^1.6.7",
+    "bull": "^4.12.2",
+    "cron": "^3.1.6",
     "dotenv": "^16.4.5",
     "dotenv-cli": "^7.3.0",
     "reflect-metadata": "^0.1.13",

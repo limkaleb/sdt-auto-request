@@ -14,13 +14,28 @@ datasource db {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  firstName String   @map("first_name")
-  lastName  String   @map("last_name")
-  birthDate DateTime @map("birth_date") @db.Date
-  location  String   @map("location")
-  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
-  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+  id            Int       @id @default(autoincrement())
+  firstName     String    @map("first_name")
+  lastName      String    @map("last_name")
+  birthDate     DateTime  @map("birth_date") @db.Date
+  location      String    @map("location")
+  lastMessageAt DateTime? @map("last_message_at") @db.Timestamptz
+  createdAt     DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt     DateTime  @updatedAt @map("updated_at") @db.Timestamptz
+  Cronjob       Cronjob[]
 
+  @@unique([firstName, lastName, birthDate, location])
   @@map("users")
+}
+
+model Cronjob {
+  id        Int     @id @default(autoincrement())
+  user      User    @relation(fields: [userId], references: [id])
+  userId    Int     @map("user_id")
+  name      String  @map("name")
+  crontab   String  @map("crontab")
+  isEnabled Boolean @map("is_enabled")
+
+  @@index([userId])
+  @@map("cronjobs")
 }
