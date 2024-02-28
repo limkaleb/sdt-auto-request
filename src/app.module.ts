@@ -9,12 +9,17 @@ import { CronjobsModule } from './cronjobs/cronjobs.module';
 import { CronjobsService } from './cronjobs/cronjobs.service';
 import { CronjobsController } from './cronjobs/cronjobs.controller';
 import { TasksService } from './tasks/tasks.service';
+import { HttpModule } from '@nestjs/axios';
 
 @Module({
   imports: [
     PrismaModule,
     CronjobsModule,
     ScheduleModule.forRoot(),
+    HttpModule.register({
+      timeout: 5000,
+      maxRedirects: 5,
+    }),
     BullModule.forRoot({
       redis: {
         host: 'localhost',

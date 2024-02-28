@@ -16,6 +16,7 @@ import { CreateUserDTO } from './dtos/CreateUser.dto';
 import { CronjobsService } from './cronjobs/cronjobs.service';
 import { getDay, getMonth } from './utils/date-utils';
 import { TasksService } from './tasks/tasks.service';
+import config from './core/config';
 
 @Controller('api')
 export class AppController {
@@ -33,6 +34,10 @@ export class AppController {
       throw new HttpException('User already exists', HttpStatus.BAD_REQUEST);
     }
 
+    if (!Object.keys(config.TIMEZONE_MAP).includes(createUserDto.location)) {
+      throw new HttpException('Location not supported', HttpStatus.BAD_REQUEST);
+    }
+
     const newUser = await this.appService.createUser({
       ...createUserDto,
       birthDate: date,
@@ -44,7 +49,7 @@ export class AppController {
       name: `${newUser.firstName}_birthday_message`,
       isEnabled: true,
       // crontab: `0 9 ${getDay(date)} ${getMonth(date)} *`,
-      crontab: `* * * * * *`,
+      crontab: `*/10 * * * * *`,
     });
 
     this.tasksService.addCronjob(cron);

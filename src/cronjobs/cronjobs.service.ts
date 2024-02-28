@@ -16,11 +16,18 @@ export class CronjobsService {
         ...data,
         userId,
       },
+      include: {
+        user: true,
+      },
     });
   }
 
   async getCronjobs() {
-    return this.prisma.cronjob.findMany();
+    return this.prisma.cronjob.findMany({
+      include: {
+        user: true,
+      },
+    });
   }
 
   async getCronjobById(id: number) {
