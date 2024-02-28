@@ -1,22 +1,24 @@
 // import { HttpService } from '@nestjs/axios';
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { SchedulerRegistry } from '@nestjs/schedule';
-// import { QueueService } from 'src/queue/queue.service';
 import { CronJob } from 'cron';
 // import dayjs from 'dayjs';
 import { CronjobsService } from 'src/cronjobs/cronjobs.service';
 import { Cronjob } from '@prisma/client';
 
 @Injectable()
-export class TasksService {
+export class TasksService implements OnModuleInit {
   private readonly logger = new Logger(TasksService.name);
   constructor(
-    // private readonly queueService: QueueService,
     // private readonly httpService: HttpService,
     // private prisma: PrismaService,
     private schedulerRegistry: SchedulerRegistry,
     private cronjobsService: CronjobsService,
   ) {}
+
+  async onModuleInit() {
+    return this.addCronjobs();
+  }
 
   async addCronjobs() {
     const cronjobs = await this.cronjobsService.getCronjobs();

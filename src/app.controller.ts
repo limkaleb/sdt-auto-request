@@ -74,8 +74,8 @@ export class AppController {
 
   @Delete('/user/:id')
   async deleteUser(@Param('id', ParseIntPipe) id: number) {
-    const cron = await this.cronjobService.getCronjobByUserId(id);
-    this.tasksService.deleteCron(cron.name);
+    const crons = await this.cronjobService.deleteCronjobsByUserId(id);
+    this.tasksService.deleteCron(crons[0].name);
     await this.appService.deleteUser(id);
     return { status: 'success' };
   }

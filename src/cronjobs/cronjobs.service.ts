@@ -55,12 +55,4 @@ export class CronjobsService {
       },
     });
   }
-
-  async getCronjobByUserId(userId: number) {
-    return this.prisma.cronjob.findFirst({
-      where: {
-        userId,
-      },
-    });
-  }
 }
