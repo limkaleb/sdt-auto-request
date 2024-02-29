@@ -29,12 +29,14 @@ model User {
 }
 
 model Cronjob {
-  id        Int     @id @default(autoincrement())
-  user      User?   @relation(fields: [userId], references: [id])
-  userId    Int?    @map("user_id")
-  name      String  @map("name")
-  crontab   String  @map("crontab")
-  isEnabled Boolean @map("is_enabled")
+  id        Int      @id @default(autoincrement())
+  user      User?    @relation(fields: [userId], references: [id])
+  userId    Int?     @map("user_id")
+  name      String   @map("name")
+  crontab   String   @map("crontab")
+  isEnabled Boolean  @map("is_enabled")
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
 
   @@index([userId])
   @@map("cronjobs")
