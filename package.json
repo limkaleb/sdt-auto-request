@@ -16,6 +16,9 @@
     "test": "dotenv -e .env.test jest",
     "postinstall": "prisma generate"
   },
+  "prisma": {
+    "seed": "ts-node prisma/seed.ts"
+  },
   "dependencies": {
     "@nestjs/axios": "^3.0.2",
     "@nestjs/bull": "^10.1.0",
