@@ -10,7 +10,6 @@ import {
   Post,
   Put,
 } from '@nestjs/common';
-import dayjs from 'dayjs';
 import { AppService } from './app.service';
 import { CreateUserDTO } from './dtos/CreateUser.dto';
 import { CronjobsService } from './cronjobs/cronjobs.service';
@@ -43,13 +42,10 @@ export class AppController {
       birthDate: date,
     });
 
-    const month = dayjs(date).get('month');
-    const day = dayjs(date).get('date');
     const cron = await this.cronjobService.createCronjob(newUser.id, {
       name: `${newUser.firstName}_birthday_message`,
       isEnabled: true,
-      // crontab: `0 9 ${getDay(date)} ${getMonth(date)} *`,
-      crontab: `*/10 * * * * *`,
+      crontab: `0 9 ${getDay(date)} ${getMonth(date)} *`,
     });
 
     this.tasksService.addCronjob(cron);
@@ -80,7 +76,7 @@ export class AppController {
   @Delete('/user/:id')
   async deleteUser(@Param('id', ParseIntPipe) id: number) {
     const crons = await this.cronjobService.deleteCronjobsByUserId(id);
-    this.tasksService.deleteCron(crons[0].name);
+    this.tasksService.deleteCron(crons[0].name); // since it's only 1 cronjob for now
     await this.appService.deleteUser(id);
     return { status: 'success' };
   }
@@ -89,5 +85,11 @@ export class AppController {
   async getUserById(@Param('id', ParseIntPipe) id: number) {
     const user = await this.appService.getUserById(id);
     return user;
+  }
+
+  @Get('/user')
+  async getUsers() {
+    const users = await this.appService.getUsers();
+    return users;
   }
 }

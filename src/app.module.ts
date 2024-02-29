@@ -7,7 +7,6 @@ import { BullModule } from '@nestjs/bull';
 import { QueueModule } from './queue/queue.module';
 import { CronjobsModule } from './cronjobs/cronjobs.module';
 import { CronjobsService } from './cronjobs/cronjobs.service';
-import { CronjobsController } from './cronjobs/cronjobs.controller';
 import { TasksService } from './tasks/tasks.service';
 import { HttpModule } from '@nestjs/axios';
 
@@ -29,7 +28,7 @@ import { HttpModule } from '@nestjs/axios';
     QueueModule,
     CronjobsModule,
   ],
-  controllers: [AppController, CronjobsController],
+  controllers: [AppController],
   providers: [AppService, CronjobsService, TasksService],
 })
 export class AppModule {}

@@ -1,10 +1,9 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class CronjobsService {
-  private readonly logger = new Logger(CronjobsService.name);
   constructor(private prisma: PrismaService) {}
 
   async createCronjob(

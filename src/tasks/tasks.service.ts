@@ -2,8 +2,9 @@ import { HttpService } from '@nestjs/axios';
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { SchedulerRegistry } from '@nestjs/schedule';
 import { CronJob } from 'cron';
-import { CronjobsService } from 'src/cronjobs/cronjobs.service';
-import config from 'src/core/config';
+import { CronjobsService } from '../cronjobs/cronjobs.service';
+import config from '../core/config';
+import { buildMessage } from '../utils/message-utils';
 
 @Injectable()
 export class TasksService implements OnModuleInit {
@@ -23,14 +24,14 @@ export class TasksService implements OnModuleInit {
     const cronjobs = await this.cronjobsService.getCronjobs();
 
     cronjobs.forEach((cronjob) => {
-      const { firstName, lastName, location } = cronjob.user;
+      const { location } = cronjob.user;
       const job = new CronJob(
         cronjob.crontab,
         () => {
-          this.logger.warn(`Sending email!`);
+          this.logger.log(`Sending email!`);
           this.httpService.post(SEND_EMAIL_URL, {
             email: SEND_EMAIL_TARGET,
-            message: `Hey, ${firstName} ${lastName} it's your birthday`,
+            message: buildMessage(cronjob),
           });
         },
         null, // onComplete
@@ -45,14 +46,14 @@ export class TasksService implements OnModuleInit {
 
   async addCronjob(cronjob: any) {
     const { TIMEZONE_MAP, SEND_EMAIL_TARGET, SEND_EMAIL_URL } = config;
-    const { firstName, lastName, location } = cronjob.user;
+    const { location } = cronjob.user;
     const job = new CronJob(
       cronjob.crontab,
       async () => {
-        this.logger.warn(`Sending email!`);
+        this.logger.log(`Sending email!`);
         this.httpService.post(SEND_EMAIL_URL, {
           email: SEND_EMAIL_TARGET,
-          message: `Hey, ${firstName} ${lastName} it's your birthday`,
+          message: buildMessage(cronjob),
         });
       },
       null, // onComplete
