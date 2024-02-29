@@ -9,7 +9,7 @@ Please add `.env` file with `.env.example` as reference
 $ pnpm install
 ```
 
-## Running the app
+## Run the app on local
 
 ```bash
 # watch mode
